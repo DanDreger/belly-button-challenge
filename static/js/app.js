@@ -36,6 +36,77 @@ function optionChanged(selectedData) {
     // Create or update the chart using Plotly
     const barChart = document.getElementById('bar');
     Plotly.newPlot(barChart, [trace], layout);
+
+    // Call the createBubbleChart function with the selected data
+    createBubbleChart(selectedData);
+}
+
+// Define the createBubbleChart function to create the bubble chart
+function createBubbleChart(selectedData) {
+    // Extract the required studentData
+    const otuIds = selectedData.otu_ids;
+    const sampleValues = selectedData.sample_values;
+    const markerSize = selectedData.sample_values;
+    const markerColor = selectedData.otu_ids;
+    const textValues = selectedData.otu_labels;
+
+    // Define the studentData trace for the bubble chart
+    const trace = {
+        x: otuIds,
+        y: sampleValues,
+        mode: 'markers',
+        marker: {
+            size: markerSize,
+            color: markerColor,
+            colorscale: 'Viridis', // You can choose any colorscale you prefer
+            opacity: 0.7
+        },
+        text: textValues,
+        type: 'scatter'
+    };
+
+    // Define the layout for the bubble chart
+    const layout = {
+        title: 'Bubble Chart',
+        xaxis: {
+            title: 'OTU IDs',
+            type: 'log', // Set the x-axis to use a logarithmic scale
+            autorange: true // Let Plotly automatically determine the range of the x-axis
+        },
+        yaxis: {
+            title: 'Sample Values',
+            autorange: true // Let Plotly automatically determine the range of the x-axis
+        },
+        showlegend: false
+    };
+
+    // Create or update the bubble chart using Plotly
+    const bubble = document.getElementById('bubble');
+    Plotly.newPlot(bubble, [trace], layout);
+
+}
+
+
+
+updateDemographicInfo = (selectedMetadata) => {
+    console.log(selectedMetadata)
+
+    demoInfo = document.getElementById("DemographicInfo")
+    demoInfo.innerHTML = "";
+
+    let id = selectedMetadata.id
+    let ethnicity = selectedMetadata.ethnicity
+    let gender = selectedMetadata.gender
+    let age = selectedMetadata.age
+    let location = selectedMetadata.location
+    let bbtype = selectedMetadata.bbtype
+    let wfreq = selectedMetadata.wfreq
+
+
+    const outputString = `Id: ${id} <br> Ethnicity: ${ethnicity} <br> Gender: ${gender} <br> Age: ${age} <br> Location: ${location} <br> bbtype: ${bbtype} <br> wfreq: ${wfreq} <br> `;
+    demoInfo.innerHTML += outputString;
+
+
 }
 
 const url = "https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json";
@@ -47,6 +118,9 @@ d3.json(url)
     .then(function (data) {
         const selectElement = document.getElementById('dataSelect');
         studentData = data.samples
+        metadata = data.metadata
+
+        console.log(studentData)
 
         studentData.forEach((item, index) => {
             const option = document.createElement('option');
@@ -63,9 +137,16 @@ d3.json(url)
         selectElement.addEventListener('change', (event) => {
             const selectedIndex = event.target.value;
             const selectedData = studentData[selectedIndex];
+            const selectedMetadata = metadata[selectedIndex]
 
             optionChanged(selectedData);
+            updateDemographicInfo(selectedMetadata)
+            console.log(selectedMetadata)
+
         });
+
+        createBubbleChart(studentData[0]);
+        updateDemographicInfo(metadata[0])
 
     })
     .catch(error => console.error('Error fetching data:', error));
