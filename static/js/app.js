@@ -41,6 +41,59 @@ function optionChanged(selectedData) {
     createBubbleChart(selectedData);
 }
 
+function washingMeter(selectedMetadata) {
+
+
+    const washValue = selectedMetadata.wfreq;
+
+    const data = [{
+        type: 'indicator',
+        mode: 'gauge+number',
+        value: washValue,
+        domain: {
+            x: [0, 1],
+            y: [0, 1]
+        },
+        title: {
+            text: 'Belly Button Washing Freequency <br> Scrubs per Week'
+        },
+        gauge: {
+            axis: {
+                range: [1, 10]
+            },
+            steps: [{
+                range: [1, 4],
+                color: '#ffcccb'
+            },
+            {
+                range: [4, 8],
+                color: '#ffffe0'
+            },
+            {
+                range: [8, 10],
+                color: '#90EE90'
+            }
+            ],
+            threshold: {
+                line: {
+                    color: 'black',
+                    width: 4
+                },
+                thickness: 0.75,
+                value: washValue
+            }
+        }
+    }];
+
+    const layout = {
+        width: 600,
+        height: 400,
+    };
+
+    Plotly.newPlot('gauge', data, layout);
+
+}
+
 // Define the createBubbleChart function to create the bubble chart
 function createBubbleChart(selectedData) {
     // Extract the required studentData
@@ -120,7 +173,7 @@ d3.json(url)
         studentData = data.samples
         metadata = data.metadata
 
-        console.log(studentData)
+        console.log(data)
 
         studentData.forEach((item, index) => {
             const option = document.createElement('option');
@@ -141,12 +194,14 @@ d3.json(url)
 
             optionChanged(selectedData);
             updateDemographicInfo(selectedMetadata)
+            washingMeter(selectedMetadata)
             console.log(selectedMetadata)
 
         });
 
         createBubbleChart(studentData[0]);
         updateDemographicInfo(metadata[0])
+        washingMeter(metadata[0])
 
     })
     .catch(error => console.error('Error fetching data:', error));
