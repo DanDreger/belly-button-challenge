@@ -5,12 +5,15 @@ function optionChanged(selectedData) {
     const sampleValues = selectedData.sample_values.slice(0, 10);
 
     // Sort the data based on sample_values in ascending order
-    const sortedData = sampleValues.map((value, index) => ({ otu_id: otuIds[index], sample_value: value }))
+    const sortedData = sampleValues.map((value, index) => ({ otu_id: otuIds[index], sample_value: value, otu_label: selectedData.otu_labels[index] }))
         .sort((a, b) => a.sample_value - b.sample_value);
 
     // Extract the sorted otuIds and sampleValues from the sortedData
     const sortedOtuIds = sortedData.map(item => item.otu_id);
     const sortedSampleValues = sortedData.map(item => item.sample_value);
+    const otuLabels = sortedData.map(item => item.otu_label);
+    console.log(sortedData)
+
 
 
     // Define the data trace
@@ -21,7 +24,9 @@ function optionChanged(selectedData) {
         orientation: 'h', // Horizontal bar chart
         marker: {
             color: '#337ab7' // Set a color for the bars
-        }
+        },
+        text: otuLabels,
+        hoverinfo: 'text'
     };
 
     // Define the layout
@@ -76,7 +81,7 @@ function washingMeter(selectedMetadata) {
             ],
             threshold: {
                 line: {
-                    color: 'black',
+                    color: 'grey',
                     width: 4
                 },
                 thickness: 0.75,
@@ -173,12 +178,12 @@ d3.json(url)
         studentData = data.samples
         metadata = data.metadata
 
-        console.log(data)
+
 
         studentData.forEach((item, index) => {
             const option = document.createElement('option');
             option.value = index;
-            option.textContent = `Student #${index}`;
+            option.textContent = `Student ID #${item.id}`;
             selectElement.appendChild(option);
 
         });
@@ -205,7 +210,3 @@ d3.json(url)
 
     })
     .catch(error => console.error('Error fetching data:', error));
-
-
-
-
